@@ -1,0 +1,119 @@
+import android.media.MediaPlayer;
+import android.content.res.AssetFileDescriptor;
+import android.content.Context;
+import android.app.Activity;
+import android.os.Bundle;
+
+Activity act;
+Context mC;
+Context context;
+MediaPlayer snd;
+boolean startMP=true;
+AssetFileDescriptor fd;
+int currentPos = 0;
+
+PImage background;
+
+void setup()
+{
+  size(displayWidth, displayHeight);
+  act = this.getActivity();
+  context = act.getApplicationContext();
+  
+  background = loadImage("background.png");
+  image(background, 0, 0, width, height);
+}
+
+void draw()
+{
+  if (startMP) {   
+    startMPNow();
+  }
+  if (snd.isPlaying()==false) {
+    try {
+      
+      startMPNow();
+      snd.prepare();
+      snd.seekTo(currentPos);
+      snd.start();
+    }
+    catch (IllegalArgumentException e) {
+      e.printStackTrace();
+    }
+    catch (IllegalStateException e) {
+      e.printStackTrace();
+    } 
+    catch (IOException e) {
+      e.printStackTrace();
+    }
+  }
+} 
+
+void startMPNow() {
+  snd= new MediaPlayer();
+  try 
+  {
+    fd = context.getAssets().openFd("badguy.mp3");
+    snd.setDataSource(fd.getFileDescriptor(), fd.getStartOffset(), fd.getLength());
+  }
+  catch (IllegalArgumentException e) {
+    e.printStackTrace();
+  }
+  catch (IllegalStateException e) {
+    e.printStackTrace();
+  } 
+  catch (IOException e) {
+    e.printStackTrace();
+  }
+  startMP=false;
+}
+
+@ Override 
+  public void onCreate(Bundle savedInstanceState) {
+  super.onCreate(savedInstanceState);
+}
+
+@ Override 
+  public void onStart() {
+  super.onStart();
+}
+
+@ Override 
+  public void onResume() {
+  super.onResume();
+  
+  startMP=true;
+}
+
+
+@ Override 
+  void onPause() {
+  super.onPause();
+  currentPos = snd.getCurrentPosition();
+  snd.stop();
+}
+
+@ Override 
+  void onStop() {
+  super.onStop();
+}
+
+@ Override 
+  void onDestroy() {
+  super.onDestroy();
+  snd.release();
+  snd= null;
+}
+
+void endPlaying() {
+  if (snd!=null) {
+    if (snd.isPlaying()==true) {
+      try {
+        snd.stop();
+      } 
+      catch (IllegalStateException e) {
+        e.printStackTrace();
+      }
+    }
+  }
+}

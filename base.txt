@@ -1,0 +1,20 @@
+  
+import processing.sound.*;
+SoundFile file;
+
+PImage background;
+
+void setup()
+{
+  size(displayWidth, displayHeight);
+  
+  background = loadImage("background.png");
+  
+  file = new SoundFile(this, "badguy.mp3");  
+  file.play();
+}
+
+void draw()
+{
+  image(background, 0, 0, width, height);
+}
